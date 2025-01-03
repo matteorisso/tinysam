@@ -1,3 +1,5 @@
+# Author: Matteo Risso (github.com/matteorisso)
+
 from typing import Callable, List, Optional
 
 from tinygrad import nn
@@ -36,7 +38,10 @@ class Attention:
     self.num_heads = num_heads
     head_dim = dim // num_heads
     self.scale = qk_scale or head_dim**-0.5
-    self.qkv = (Tensor.scaled_uniform(dim, dim * 3), Tensor.zeros(dim * 3) if qkv_bias else None)
+    self.qkv = (
+      Tensor.scaled_uniform(dim, dim * 3),
+      Tensor.zeros(dim * 3) if qkv_bias else None,
+    )
     self.proj = (Tensor.scaled_uniform(dim, dim), Tensor.zeros(dim))
 
   def __call__(self, x: Tensor) -> Tensor:
@@ -68,9 +73,15 @@ class Mlp:
   ):
     out_features = out_features or in_features
     hidden_features = hidden_features or in_features
-    self.fc1 = (Tensor.scaled_uniform(in_features, hidden_features), Tensor.zeros(hidden_features))
+    self.fc1 = (
+      Tensor.scaled_uniform(in_features, hidden_features),
+      Tensor.zeros(hidden_features),
+    )
     self.act = act_layer
-    self.fc2 = (Tensor.scaled_uniform(hidden_features, out_features), Tensor.zeros(out_features))
+    self.fc2 = (
+      Tensor.scaled_uniform(hidden_features, out_features),
+      Tensor.zeros(out_features),
+    )
 
   def __call__(self, x: Tensor) -> Tensor:
     return self.act(x.linear(*self.fc1)).linear(*self.fc2)
