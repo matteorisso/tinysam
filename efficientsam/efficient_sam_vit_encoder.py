@@ -160,14 +160,14 @@ class ImageEncoderViT:
       nn.LayerNorm2d(neck_dims[0]),
     ]
 
-    def __call__(self, x: Tensor) -> Tensor:
-      x = self.patch_embed(x)
-      # B C H W -> B H W C
-      x = x.permute(0, 2, 3, 1)
-      x = x.add(self.pos_embed[:, 1:])
-      num_patches = x.shape[1]
-      x = x.reshape(x.shape[0], num_patches * num_patches, x.shape[3])
-      x = x.sequential(self.blocks)
-      x = x.reshape(x.shape[0], num_patches, num_patches, x.shape[2])
-      x = x.permute(0, 3, 1, 2).sequential(self.neck)
-      return x
+  def __call__(self, x: Tensor) -> Tensor:
+    x = self.patch_embed(x)
+    # B C H W -> B H W C
+    x = x.permute(0, 2, 3, 1)
+    x = x.add(self.pos_embed[:, 1:])
+    num_patches = x.shape[1]
+    x = x.reshape(x.shape[0], num_patches * num_patches, x.shape[3])
+    x = x.sequential(self.blocks)
+    x = x.reshape(x.shape[0], num_patches, num_patches, x.shape[2])
+    x = x.permute(0, 3, 1, 2).sequential(self.neck)
+    return x

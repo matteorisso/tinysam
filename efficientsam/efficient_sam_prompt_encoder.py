@@ -49,7 +49,7 @@ class PromptEncoder:
       If the label is 2, the point is the top-left corner of a bounding box.
       If the label is 3, the point is the bottom-right corner of a bounding box.
     """
-    points = points + 0.5  # Shift to center of pixel
+    points = points.add(0.5)  # Shift to center of pixel
     point_embedding = self.pe_layer.forward_with_coords(points, self.input_image_size)
 
     # Extract different types of prompts ids
@@ -74,7 +74,7 @@ class PromptEncoder:
     )
     return point_embedding
 
-  def forward(
+  def __call__(
     self,
     coords: Tensor,
     labels: Tensor,
@@ -109,7 +109,7 @@ class PositionEmbeddingRandom:
   def _pe_encoding(self, coords: Tensor) -> Tensor:
     """Positionally encode points that are normalized to [0,1]."""
     # assuming coords are in [0, 1]^2 square and have d_1 x ... x d_n x 2 shape
-    coords = 2 * coords - 1
+    coords = coords.mul(2).add(-1)
     coords = coords @ self.positional_encoding_gaussian_matrix
     coords = 2 * np.pi * coords
     # outputs d_1 x ... x d_n x C shape
